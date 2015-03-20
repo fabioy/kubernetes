@@ -215,15 +215,23 @@ func (mgr *ClusterManager) Put(name string, state ClusterState) {
 	}
 }
 
-func (mgr *ClusterManager) Query(query ClusterState) (string, error) {
+func (ctx *Context) Query(query ClusterState) (string, error) {
+	mgr := ctx.Clusters
 	mgr.mutex.RLock()
 	defer mgr.mutex.RUnlock()
 
+	matchingClusters := make([]string, 0, len(mgr.clusters))
 	for name, info := range mgr.clusters {
-		if query == ClusterAny || query == info.State {
-			return name, nil
+		if (query == ClusterAny && info.State != ClusterExclusive) || query == info.State {
+			matchingClusters = append(matchingClusters, name)
 		}
 	}
+
+	if len(matchingClusters) > 0 {
+		retName := matchingClusters[ctx.Rand.Int31()%int32(len(matchingClusters))]
+		return retName, nil
+	}
+
 	return "", fmt.Errorf("No cluster maching queried state: %v", query)
 }
 

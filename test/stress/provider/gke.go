@@ -90,7 +90,7 @@ func (provider *GKECloudProvider) ListClusters(ctx *common.Context) (clusterName
 	}
 
 	clusters := clustersData.Clusters
-	clusterNames = make([]string, 0, len(clusters))
+	clusterNames = make([]string, len(clusters))
 	for i, cluster := range clusters {
 		clusterNames[i] = cluster.Name
 		ctx.Log.Printf("Cluster name: %v, Status: %v", cluster.Name, cluster.Status)

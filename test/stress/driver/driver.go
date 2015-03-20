@@ -23,6 +23,7 @@ import (
 	"math/rand"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"sort"
 	"strconv"
 	"strings"
@@ -189,7 +190,9 @@ func runTests(ctxs []*common.Context) {
 							// There was a panic. Stop everyone else and wait for orderly shutdown.
 							atomic.StoreInt32(&sharedExitNow, 1)
 
-							fmt.Println("!!!! An error has occurred. Press Enter to continue with cleanup and exit. ")
+							fmt.Printf("!!!! Panic error: %v", err)
+							fmt.Printf("!!!! Callstack: %v", string(debug.Stack()))
+							fmt.Println("!!!! Press Enter to continue with cleanup and exit. ")
 							var b []byte = make([]byte, 1)
 							os.Stdin.Read(b)
 						}
@@ -310,7 +313,7 @@ func ParseTestCases(args []string, isRunSequential bool, allTestCases cases.AllT
 		// Tests with no weight values get a default value of 1.
 		// Also, if tests are to be run sequentially, all tests weights are ignored.
 		weight := int32(1)
-		var test string
+		test := arg
 		if strings.Contains(arg, "#") {
 			vals := strings.Split(arg, "#")
 			if len(vals) > 2 {

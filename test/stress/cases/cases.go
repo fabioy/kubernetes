@@ -33,6 +33,7 @@ var (
 		"listCluster":    caseListCluster,
 		"sleep":          caseSleep,
 		"pingTestApp":    casePingTestApp,
+		"listPods":       caseListPods,
 	}
 )
 
@@ -200,5 +201,16 @@ func casePingTestApp(ctx *common.Context) {
 		ctx.Log.Panicf("Error making request to app. URL: %v, Error: %v", testUrl, err)
 	} else {
 		ctx.Log.Printf("Successful request to app. URL: %v, Output: %v", testUrl, output)
+	}
+}
+
+func caseListPods(ctx *common.Context) {
+	ctx.Log.Println("[Test case: List pods]")
+	clusterName, err := ctx.Query(common.ClusterAny)
+	output, err := common.ListPods(ctx, clusterName)
+	if err != nil {
+		ctx.Log.Panicf("Error listing pods, err: %v, output: %v", err, output)
+	} else {
+		ctx.Log.Printf("List pods: %v", output)
 	}
 }

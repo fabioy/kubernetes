@@ -147,3 +147,12 @@ func TestAppUrl(ctx *Context, appUrl string) (output string, err error) {
 	output = string(body)
 	return
 }
+
+func ListPods(ctx *Context, clusterName string) (output string, err error) {
+	params := fmt.Sprintf("get pods")
+	output, err = ctx.Provider.RunKubectl(ctx, clusterName, params)
+	if err != nil {
+		return
+	}
+	return
+}
